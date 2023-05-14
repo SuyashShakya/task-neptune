@@ -1,21 +1,18 @@
-import { Container } from '@chakra-ui/react';
 import React from 'react';
-import { Route,   BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Box, Text} from "@chakra-ui/react";
 import CurrencyConvertorComponent from './components/CurrencyConvertorComponent';
+import ConnectWallet from './components/ConnectWallet';
 
-import Homepage from './pages/Homepage';
-
-function App() {
-  return (
-    <Container maxW='4xl' p={5} bg='gray.50' minH='100vh'>
-      <Router>
-        <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/currency-convertor" element={<CurrencyConvertorComponent />} />
-        </Routes>
-      </Router>
-    </Container>
-  );
+const App = () => {
+    return (
+        <Box display='flex' w='100%' minH='100vh' alignItems='center' justifyContent='center' bg='purple.900' >
+            <Box display='flex' flexDir='column' p={5} borderRadius={10} bg='white' gap={5}>
+                <Text fontSize={24} fontWeight={600}>Neptune Task</Text>
+                <CurrencyConvertorComponent />
+                <ConnectWallet />
+            </Box>
+        </Box>
+    )
 }
 
-export default App;
+export default App

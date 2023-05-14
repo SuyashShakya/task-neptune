@@ -28,7 +28,6 @@ const CurrencyConvertorComponent = () => {
                 type="number"
                 textAlign="right"
                 leftAddonText="NEP"
-                w='-webkit-fit-content'
                 value={nepValue}
                 onChange={handleNepChange}
             />
@@ -36,7 +35,6 @@ const CurrencyConvertorComponent = () => {
                 type="number"
                 textAlign="right"
                 leftAddonText="BUSD"
-                w='-webkit-fit-content'
                 value={busdValue}
                 onChange={handleBusdChange}
             />
