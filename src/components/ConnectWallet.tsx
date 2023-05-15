@@ -1,8 +1,7 @@
 import React from "react"
 import isEmpty from 'lodash/isEmpty'
 import { Box, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react"
-import { ethers } from "ethers"
-
+import { ethers } from "ethers";
 
 const ConnectWallet = () => {
     const [address, setAddress] = React.useState([])
@@ -29,7 +28,14 @@ const ConnectWallet = () => {
             setWalletBalance(ethers.utils.formatEther(balance) as unknown as number)
             onOpen()
         })
-    } 
+    }
+    
+    const disconnectWallet = async () => {
+        await window.ethereum._handleDisconnect()
+        await window.ethereum._handleStreamDisconnect()
+        window.location.reload()
+    }
+    
     return (
         <>
             {isEmpty(address) ? 
@@ -72,7 +78,7 @@ const ConnectWallet = () => {
                                     </Tbody>
                                 </Table>
                             </TableContainer>
-                            <Button bg='purple.900' color='white'>Disconnect Wallet</Button>
+                            <Button bg='purple.900' color='white' onClick={disconnectWallet}>Disconnect Wallet</Button>
                         </Box>
                     </ModalBody>
                 </ModalContent>
