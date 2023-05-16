@@ -1,32 +1,52 @@
 import React from "react"
 import isEmpty from 'lodash/isEmpty'
 import { Box, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react"
-import { ethers } from "ethers";
+import Web3 from "web3";
 
 const ConnectWallet = () => {
-    const [address, setAddress] = React.useState([])
-    const [walletDetails, setWalletDetails] = React.useState<{name: string, chainId: number}>()
+    const [address, setAddress] = React.useState<string[]>([])
+    const [chainId, setChainId] = React.useState(0)
     const [walletBalance, setWalletBalance] = React.useState(0)
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    const connectWallet = async () => {
-        if(window.ethereum){
-            await window.ethereum.request({
-            method: 'eth_requestAccounts',
-        }).then((res: string[]) => setAddress(res))
+    const detectProvider = () => {
+        let provider;
+        if (window.ethereum) {
+          provider = window.ethereum;
+        } else if (window.web3) {
+          provider = window.web3.currentProvider;
         } else {
-            console.error('Install metamask')        
+          console.error('Install metamask')
+        }
+        return provider;
+    };
+
+    const connectWallet = async () => {
+        const provider = detectProvider()
+        if (provider) {
+            if (provider !== window.ethereum) {
+              console.error(
+                "No provider available!!"
+              );
+            } else {
+                const address = await provider.request({
+                    method: "eth_requestAccounts",
+                  });
+                setAddress(address)  
+            } 
         }
     }
 
     const showWalletDetails = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const walletDetails = await provider._networkPromise
-        setWalletDetails(walletDetails)
-        await window.ethereum.request({method: 'eth_getBalance', params: [address[0], 'latest']}).then((balance: any) => {
-            setWalletBalance(ethers.utils.formatEther(balance) as unknown as number)
-            onOpen()
+        const provider = detectProvider()
+        const web3 = new Web3(provider);
+        await web3.eth.getChainId().then(async (chainId) => {
+            setChainId(chainId)
+            await web3.eth.getBalance(address[0]).then((balance) => {
+                setWalletBalance(balance as unknown as number)
+                onOpen();
+            })
         })
     }
     
@@ -35,7 +55,6 @@ const ConnectWallet = () => {
         await window.ethereum._handleStreamDisconnect()
         window.location.reload()
     }
-    
     return (
         <>
             {isEmpty(address) ? 
@@ -61,15 +80,11 @@ const ConnectWallet = () => {
                                     <Tbody>
                                         <Tr>
                                             <Td>Account</Td>
-                                            <Td>{address}</Td>
-                                        </Tr>
-                                        <Tr>
-                                            <Td>Name</Td>
-                                            <Td>{walletDetails?.name}</Td>
+                                            <Td>{!isEmpty(address[0]) && `${address[0].substring(0, 4)}...${address[0].substring(address[0].length - 4)}` }</Td>
                                         </Tr>
                                         <Tr>
                                             <Td>Chain Id</Td>
-                                            <Td>{walletDetails?.chainId}</Td>
+                                            <Td>{chainId}</Td>
                                         </Tr>
                                         <Tr>
                                             <Td>Balance</Td>
